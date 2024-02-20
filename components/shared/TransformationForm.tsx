@@ -24,6 +24,8 @@ import {
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import { CustomField } from "./CustomField";
 import MediaUploader from "./MediaUploader";
+import TransformedImage from "./TransformedImage";
+import { updateCredits } from "@/lib/actions/user.actions";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -123,10 +125,9 @@ const TransformationForm = ({
     );
 
     setNewTransformation(null);
-
-    // TODO: Return to update Credits
+    // TODO: Update credit free to something else
     startTransition(async () => {
-      // await updateCredits(userId, creditBalance - 1);
+      await updateCredits(userId, -1);
     });
   };
 
@@ -235,6 +236,15 @@ const TransformationForm = ({
                 type={type}
               />
             )}
+          />
+
+          <TransformedImage
+            image={image}
+            type={type}
+            title={form.getValues().title}
+            isTransforming={isTransforming}
+            setIsTransforming={setIsTransforming}
+            transformationConfig={transformationConfig}
           />
         </div>
 
