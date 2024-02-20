@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 const populateUser = (query: any) =>
   query.populate({
     path: "author",
-    model: "User",
+    model: User,
     select: "_id firstName lastName",
   });
 
@@ -33,7 +33,7 @@ export async function addImage({ image, userId, path }: AddImageParams) {
 
     revalidatePath(path);
 
-    return JSON.stringify(JSON.stringify(newImage));
+    return JSON.parse(JSON.stringify(newImage));
   } catch (error) {
     handleError(error);
   }
@@ -47,18 +47,18 @@ export async function updateImage({ image, userId, path }: UpdateImageParams) {
     const imageToUpdate = await Image.findById(image._id);
 
     if (!imageToUpdate || imageToUpdate.author.toHexString() !== userId) {
-      throw new Error("Unauthorized or Image not found");
+      throw new Error("Unauthorized or image not found");
     }
 
-    const updateImage = await Image.findByIdAndUpdate(
+    const updatedImage = await Image.findByIdAndUpdate(
       imageToUpdate._id,
-      Image,
+      image,
       { new: true }
     );
 
     revalidatePath(path);
 
-    return JSON.stringify(JSON.stringify(updateImage));
+    return JSON.parse(JSON.stringify(updatedImage));
   } catch (error) {
     handleError(error);
   }
@@ -88,7 +88,7 @@ export async function getImageById(imageId: string) {
       throw new Error("Image not found");
     }
 
-    return JSON.stringify(JSON.stringify(image));
+    return JSON.parse(JSON.stringify(image));
   } catch (error) {
     handleError(error);
   }
