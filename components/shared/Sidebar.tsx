@@ -15,7 +15,7 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="flex size-full flex-col gap-4">
-        <Link href={"/"} className="sidebar-logo">
+        <Link href={"/"} className="sidebar-logo ml-3">
           <Image
             src={"/assets/images/logo-text.png"}
             alt="Logo-text"
