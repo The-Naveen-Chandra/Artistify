@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { getCldImageUrl } from "next-cloudinary";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { any, z } from "zod";
@@ -20,6 +20,7 @@ import {
 
 import {
   aspectRatioOptions,
+  creditFee,
   defaultValues,
   transformationTypes,
 } from "@/constants";
@@ -34,6 +35,7 @@ import { updateCredits } from "@/lib/actions/user.actions";
 import { CustomField } from "./CustomField";
 import MediaUploader from "./MediaUploader";
 import TransformedImage from "./TransformedImage";
+import { InsufficientCreditsModal } from "./insufficientCreditsModal";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -196,15 +198,22 @@ const TransformationForm = ({
     );
 
     setNewTransformation(null);
-    // TODO: Update credit free to something else
     startTransition(async () => {
-      await updateCredits(userId, -1);
+      await updateCredits(userId, creditFee);
     });
   };
+
+  useEffect(() => {
+    if (image && (type === "restore" || type === "removeBackground")) {
+      setNewTransformation(transformationType.config);
+    }
+  }, [image, transformationType.config, type]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {creditBalance < Math.abs(creditFee) && <InsufficientCreditsModal />}
+
         <CustomField
           control={form.control}
           name="title"
